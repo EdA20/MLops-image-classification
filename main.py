@@ -1,12 +1,11 @@
-from test import test
-
 import torch
 import torch.optim as optim
 import torchvision.transforms as transforms
 
-from dataloader import get_cifar10_data
-from model import BasicBlockNet
-from train import train
+from image_classification.dataloader import get_cifar10_data
+from image_classification.model import BasicBlockNet
+from image_classification.test import test
+from image_classification.train import train
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
