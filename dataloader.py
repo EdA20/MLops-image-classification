@@ -1,28 +1,19 @@
 import numpy as np
 import torch
 import torchvision
-import torchvision.transforms as transforms
 from sklearn.model_selection import train_test_split
 
 
-def get_cifar10_data(batch_size, transform_train):
+def get_cifar10_data(batch_size, transform):
     torch.manual_seed(0)
     np.random.seed(0)
 
-    transform_test = transforms.Compose(
-        [
-            transforms.ToTensor(),
-            # Переводим цвета пикселей в отрезок [-1, 1]
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-        ]
-    )
-
     # Загружаем данные
     trainvalset = torchvision.datasets.CIFAR10(
-        root="./data", train=True, download=True, transform=transform_train
+        root="./data", train=True, download=True, transform=transform
     )
     testset = torchvision.datasets.CIFAR10(
-        root="./data", train=False, download=True, transform=transform_test
+        root="./data", train=False, download=True, transform=transform
     )
 
     # В датасете определено разбиение только на train и test,

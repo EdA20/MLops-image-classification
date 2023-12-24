@@ -15,7 +15,7 @@ if __name__ == "__main__":
         [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
     )
     train_loader, val_loader, test_loader = get_cifar10_data(
-        batch_size=64, transform_train=transform
+        batch_size=64, transform=transform
     )
     net = BasicBlockNet()
     net = net.to(device)
