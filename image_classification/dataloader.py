@@ -1,8 +1,29 @@
+from dataclasses import dataclass, field
+from typing import Tuple
+
 import numpy as np
 import torch
 import torchvision
 import torchvision.transforms as transforms
 from sklearn.model_selection import train_test_split
+
+
+@dataclass
+class Cnst:
+    classes: Tuple[str] = field(
+        default_factory=lambda: (
+            "plane",
+            "car",
+            "bird",
+            "cat",
+            "deer",
+            "dog",
+            "frog",
+            "horse",
+            "ship",
+            "truck",
+        )
+    )
 
 
 def get_cifar10_data(batch_size=64, train=True):
