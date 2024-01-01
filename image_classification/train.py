@@ -55,17 +55,17 @@ def train_epoch(model, optimizer, criterion, train_loader):
     return loss_log, acc_log
 
 
-@hydra.main(version_base=None, config_path=conf_dir, config_name="train_cfg")
+@hydra.main(version_base=None, config_path=conf_dir, config_name="config")
 def train(cfg: DictConfig):
-    train_loader, val_loader = get_cifar10_data(train=True)
+    train_loader, val_loader = get_cifar10_data(cfg.dataloader, True)
     train_loss_log, train_acc_log, val_loss_log, val_acc_log = [], [], [], []
 
-    model = instantiate(cfg.model.class_name)()
-    n_epochs = cfg.n_epochs
-    optimizer = instantiate(cfg.optimizer.class_name)(
-        model.parameters(), **cfg.optimizer.optimizer_params
+    model = instantiate(cfg.train.model.class_name)()
+    n_epochs = cfg.train.n_epochs
+    optimizer = instantiate(cfg.train.optimizer.class_name)(
+        model.parameters(), **cfg.train.optimizer.optimizer_params
     )
-    criterion = instantiate(cfg.criterion.class_name)()
+    criterion = instantiate(cfg.train.criterion.class_name)()
 
     for epoch in range(n_epochs):
         train_loss, train_acc = train_epoch(model, optimizer, criterion, train_loader)
