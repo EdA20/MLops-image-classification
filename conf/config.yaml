@@ -1,0 +1,3 @@
+﻿defaults:
+  - dataloader: dataloader_cfg
+  - train: train_cfg

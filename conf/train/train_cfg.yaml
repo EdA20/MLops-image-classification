@@ -1,0 +1,12 @@
+﻿model:
+  class_name: model.BasicBlockNet
+n_epochs: 10
+
+optimizer:
+  class_name: torch.optim.SGD
+  optimizer_params:
+    lr: 0.1
+    momentum: 0.9
+
+criterion:
+  class_name: torch.nn.CrossEntropyLoss
