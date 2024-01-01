@@ -1,24 +1,39 @@
-import numpy as np
+import pickle
+from pathlib import Path
+
+import hydra
 import torch
+from dataloader import Cnst, get_cifar10_data
+from omegaconf import DictConfig
 from tqdm import tqdm
 
+conf_dir = str(Path(__file__).resolve().parent.parent / "conf/dataloader")
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+CONSTANTS = Cnst()
 
 
-def test(model, criterion, loader):
-    loss_log = []
-    acc_log = []
+@hydra.main(version_base=None, config_path=conf_dir, config_name="dataloader_cfg")
+def main(cfg: DictConfig):
+    model = torch.load("model.pth")
+    loader = get_cifar10_data(cfg, False)
+
     model.eval()
 
-    for images, labels in tqdm(loader):
-        images = images.to(device)  # images: batch_size x num_channels x height x width
-        labels = labels.to(device)  # labels: batch_size
-        logits = model(images)  # logits: batch_size x num_classes
-        loss = criterion(logits, labels)
+    preds = []
+    with torch.no_grad():
+        for images, labels in tqdm(loader):
+            images = images.to(
+                device
+            )  # images: batch_size x num_channels x height x width
+            logits = model(images)  # logits: batch_size x num_classes
 
-        loss_log.append(loss.item())
+            pred = logits.argmax(dim=1).tolist()
+            pred = [CONSTANTS.classes[i] for i in pred]
+            preds.extend(pred)
 
-        acc = (logits.argmax(dim=1) == labels).float().mean()
-        acc_log.append(acc.item())
+    with open("preds.pkl", "wb") as f:
+        pickle.dump(preds, f)
 
-    return np.mean(loss_log), np.mean(acc_log)
+
+if __name__ == "__main__":
+    main()
