@@ -1,4 +1,4 @@
-import pickle
+import csv
 from pathlib import Path
 
 import hydra
@@ -19,7 +19,7 @@ def main(cfg: DictConfig):
 
     model.eval()
 
-    preds = []
+    preds = [["predictions"]]
     with torch.no_grad():
         for images, labels in tqdm(loader):
             images = images.to(
@@ -28,11 +28,13 @@ def main(cfg: DictConfig):
             logits = model(images)  # logits: batch_size x num_classes
 
             pred = logits.argmax(dim=1).tolist()
-            pred = [CONSTANTS.classes[i] for i in pred]
+            pred = [[CONSTANTS.classes[i]] for i in pred]
             preds.extend(pred)
 
-    with open("preds.pkl", "wb") as f:
-        pickle.dump(preds, f)
+    with open("preds.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        for row in preds:
+            writer.writerow(row)
 
 
 if __name__ == "__main__":
