@@ -1,5 +1,5 @@
 ﻿model: model.BasicBlockNet
-n_epochs: 1
+n_epochs: 10
 
 optimizer: torch.optim.SGD
 optimizer_params:
