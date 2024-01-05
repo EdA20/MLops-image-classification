@@ -1,4 +1,7 @@
+import logging
+import os
 import subprocess
+from datetime import datetime
 from pathlib import Path
 
 import hydra
@@ -11,8 +14,30 @@ from sklearn.metrics import precision_score
 from tqdm import tqdm
 from utils import instantiate, plot_losses
 
+date = datetime.today().strftime("%Y-%m-%d")
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 conf_dir = str(Path(__file__).resolve().parent.parent / "conf")
+log = logging.getLogger("train.py")
+
+
+def download_data():
+    subprocess.run(
+        [
+            "dvc",
+            "get",
+            "https://github.com/EdA20/MLops-image-classification",
+            "data/cifar-10-batches-py",
+        ]
+    )
+
+
+def upload_log_file():
+    log_dir = Path(__file__).resolve().parent.parent / f"outputs/{date}"
+    file = log_dir / os.listdir(log_dir)[-1] / "train.log"
+    print(file)
+    subprocess.run(["git", "add", file])
+    subprocess.run(["git", "commit", "-m", '"new train log added"'])
 
 
 def val_epoch(model, criterion, loader):
@@ -94,13 +119,13 @@ def train(cfg: DictConfig):
         val_acc_log.append(val_acc)
         val_precision_log.append(val_precision)
 
-        print(f"Epoch {epoch}")
-        print(
-            f" train loss: {train_loss}, train acc: {train_acc}, train preicision: {train_precision}"
-        )
-        print(
-            f" val loss: {val_loss}, val acc: {val_acc}, val preicision: {val_precision}\n"
-        )
+        epoch_logging = f"Epoch {epoch+1}"
+        train_loss_logging = f"train loss: {train_loss}, train acc: {train_acc}, train preicision: {train_precision}"
+        val_loss_logging = f"val loss: {val_loss}, val acc: {val_acc}, val preicision: {val_precision}\n"
+
+        log.info(epoch_logging)
+        log.info(train_loss_logging)
+        log.info(val_loss_logging)
 
     fig, file_path = plot_losses(
         train_loss_log,
@@ -110,7 +135,8 @@ def train(cfg: DictConfig):
         train_precision_log,
         val_precision_log,
     )
-    # torch.save(model, "model.pth")
+
+    torch.save(model, "model.pth")
 
     mlflow.set_tracking_uri("http://127.0.1.1:8080")
     mlflow.set_experiment("Loss & metrics visualization")
@@ -130,15 +156,9 @@ def train(cfg: DictConfig):
 
 
 def main():
-    subprocess.run(
-        [
-            "dvc",
-            "get",
-            "https://github.com/EdA20/MLops-image-classification",
-            "data/cifar-10-batches-py",
-        ]
-    )
+    download_data()
     train()
+    upload_log_file()
 
 
 if __name__ == "__main__":
