@@ -1,0 +1,5 @@
+outs:
+- md5: 6cd448286725d1db8b4cca517e569541
+  size: 297
+  hash: md5
+  path: train.log
