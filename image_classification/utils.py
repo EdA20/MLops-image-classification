@@ -41,15 +41,15 @@ def plot_losses(
 ):
     fig, axs = plt.subplots(3, figsize=(13, 20))
     axs[0].plot(range(1, len(train_losses) + 1), train_losses, label="train")
-    axs[0].plot(range(1, len(test_losses) + 1), test_losses, label="test")
+    axs[0].plot(range(1, len(test_losses) + 1), test_losses, label="val")
     axs[0].set_ylabel("loss")
 
     axs[1].plot(range(1, len(train_accuracies) + 1), train_accuracies, label="train")
-    axs[1].plot(range(1, len(test_accuracies) + 1), test_accuracies, label="test")
+    axs[1].plot(range(1, len(test_accuracies) + 1), test_accuracies, label="val")
     axs[1].set_ylabel("accuracy")
 
     axs[2].plot(range(1, len(train_precision) + 1), train_precision, label="train")
-    axs[2].plot(range(1, len(test_precision) + 1), test_precision, label="test")
+    axs[2].plot(range(1, len(test_precision) + 1), test_precision, label="val")
     axs[2].set_ylabel("precision")
 
     for ax in axs:

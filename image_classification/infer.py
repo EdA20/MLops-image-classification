@@ -12,15 +12,15 @@ from tqdm import tqdm
 
 date = datetime.today().strftime("%Y-%m-%d")
 
-conf_dir = str(Path(__file__).resolve().parent.parent / "conf/dataloader")
+conf_dir = str(Path(__file__).resolve().parent.parent / "conf")
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 CONSTANTS = Cnst()
 
 
-@hydra.main(version_base=None, config_path=conf_dir, config_name="dataloader_cfg")
+@hydra.main(version_base=None, config_path=conf_dir, config_name="config_infer")
 def main(cfg: DictConfig):
     model = torch.load("model.pth")
-    loader = get_cifar10_data(cfg, False)
+    loader = get_cifar10_data(cfg.dataloader, False)
 
     model.eval()
 

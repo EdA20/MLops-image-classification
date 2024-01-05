@@ -50,7 +50,7 @@ def get_cifar10_data(cfg: DictConfig, train: bool):
     # Загружаем данные
     set = torchvision.datasets.CIFAR10(root="./", train=train, transform=transform)
 
-    # В датасете определено разбиение только на train и test,
+    # В датасете определено разбиение только на train и infer,
     # так что валидацию дополнительно выделяем из обучающей выборки
     if train:
         train_idx, valid_idx = train_test_split(

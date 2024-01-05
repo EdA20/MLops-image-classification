@@ -92,7 +92,7 @@ def train_epoch(model, optimizer, criterion, train_loader):
     return np.mean(loss_log), np.mean(acc_log), np.mean(precision_log)
 
 
-@hydra.main(version_base=None, config_path=conf_dir, config_name="config")
+@hydra.main(version_base=None, config_path=conf_dir, config_name="config_train")
 def train(cfg: DictConfig):
     train_loader, val_loader = get_cifar10_data(cfg.dataloader, True)
     train_loss_log, train_acc_log, train_precision_log = [], [], []
