@@ -34,10 +34,12 @@ def download_data():
 
 def upload_log_file():
     log_dir = Path(__file__).resolve().parent.parent / f"outputs/{date}"
-    file = log_dir / os.listdir(log_dir)[-1] / "train.log"
-    print(file)
-    subprocess.run(["git", "add", file])
-    subprocess.run(["git", "commit", "-m", '"new train log added"'])
+    child = os.listdir(log_dir)[-1]
+    file = log_dir / child / "train.log"
+    subprocess.run(["dvc", "add", file])
+    subprocess.run(["dvc", "push"])
+    subprocess.run(["git", "add", f"{str(file) + '.dvc'}"])
+    subprocess.run(["git", "commit", "-m", f"'train log added ({date + ' ' + child})'"])
 
 
 def val_epoch(model, criterion, loader):
@@ -127,6 +129,7 @@ def train(cfg: DictConfig):
         log.info(train_loss_logging)
         log.info(val_loss_logging)
 
+    logging.shutdown()
     fig, file_path = plot_losses(
         train_loss_log,
         val_loss_log,
