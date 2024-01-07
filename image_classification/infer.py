@@ -10,15 +10,27 @@ from dataloader import Cnst, get_cifar10_data
 from omegaconf import DictConfig
 from tqdm import tqdm
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 date = datetime.today().strftime("%Y-%m-%d")
 
 conf_dir = str(Path(__file__).resolve().parent.parent / "conf")
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+output_dir = Path(__file__).resolve().parent.parent / f"outputs/{date}"
 CONSTANTS = Cnst()
 
 
+def upload_predictions():
+    child = str(os.listdir(output_dir)[-1])
+    file = str(output_dir / child / "predictions.csv")
+    subprocess.run(["dvc", "add", file])
+    subprocess.run(["dvc", "push"])
+    subprocess.run(["git", "add", f"{str(file) + '.dvc'}"])
+    subprocess.run(
+        ["git", "commit", "-m", f"'predictions.csv added ({date + ' ' + child})'"]
+    )
+
+
 @hydra.main(version_base=None, config_path=conf_dir, config_name="config_infer")
-def main(cfg: DictConfig):
+def infer(cfg: DictConfig):
     model = torch.load("model.pth")
     loader = get_cifar10_data(cfg.dataloader, False)
 
@@ -36,8 +48,7 @@ def main(cfg: DictConfig):
             pred = [[CONSTANTS.classes[i]] for i in pred]
             preds.extend(pred)
 
-    output_dir = Path(__file__).resolve().parent.parent / f"outputs/{date}"
-    child = os.listdir(output_dir)[-1]
+    child = str(os.listdir(output_dir)[-1])
     file = str(output_dir / child / "predictions.csv")
 
     with open(file, "w", newline="") as f:
@@ -45,12 +56,10 @@ def main(cfg: DictConfig):
         for row in preds:
             writer.writerow(row)
 
-    subprocess.run(["dvc", "add", file])
-    subprocess.run(["dvc", "push"])
-    subprocess.run(["git", "add", f"{str(file) + '.dvc'}"])
-    subprocess.run(
-        ["git", "commit", "-m", f"'predictions.csv added ({date + ' ' + child})'"]
-    )
+
+def main():
+    infer()
+    upload_predictions()
 
 
 if __name__ == "__main__":
