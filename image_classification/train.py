@@ -14,8 +14,8 @@ from sklearn.metrics import precision_score
 from tqdm import tqdm
 from utils import instantiate, plot_losses
 
-date = datetime.today().strftime("%Y-%m-%d")
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+date = datetime.today().strftime("%Y-%m-%d")
 
 conf_dir = str(Path(__file__).resolve().parent.parent / "conf")
 log = logging.getLogger("train.py")
@@ -34,7 +34,7 @@ def download_data():
 
 def upload_log_file():
     log_dir = Path(__file__).resolve().parent.parent / f"outputs/{date}"
-    child = os.listdir(log_dir)[-1]
+    child = str(os.listdir(log_dir)[-1])
     file = log_dir / child / "train.log"
     subprocess.run(["dvc", "add", file])
     subprocess.run(["dvc", "push"])
