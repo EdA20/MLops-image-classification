@@ -18,4 +18,3 @@ Acuraccy increases on train and test what indicates that model is not overfitted
 - Add scheduler in training process
 - Replace Average Pooling with Max Pooling
 - Replace ReLU with Leaky ReLU
-
